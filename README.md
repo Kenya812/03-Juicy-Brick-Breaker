@@ -8,8 +8,22 @@ Description
 To play move the paddle using the mouse. Release the ball (and trigger fever mode) using the left mouse button. Assist the ball in breaking all the bricks before you run out of time.
 
 ## Implementation
-
-Which features you included
+* Comet Trail
+* Tween
+* Confetti
+* Color Bricks
+* Screen Shake when you do something wrong
+* Music for game, paddle, wall bricks, ball
+* Highlight Ball
+* Highlight Paddle
+* Paddle Faces and Eyes Follow The Ball
+* Main Menu Shaders
+* In-Game Shaders
+* Bricks Fall and Rotate When Hit/ Break
+* Animate Bricks When Starting The Game
+* Animate Elements When They Are Hit
+* Animate The Brick's Apperanace
+* Add Particles When An Element Is Hit
 
 
 ## References
