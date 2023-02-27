@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://Brick/Brick_Container.gd" type="Script" id=1]
 [ext_resource path="res://Paddle/Paddle.tscn" type="PackedScene" id=2]
@@ -14,6 +14,55 @@
 [ext_resource path="res://Assets/Paddle Hit.wav" type="AudioStream" id=12]
 [ext_resource path="res://Assets/Brick Crunch.wav" type="AudioStream" id=13]
 [ext_resource path="res://Assets/Bang.wav" type="AudioStream" id=14]
+[ext_resource path="res://UI/Camera.gd" type="Script" id=15]
+[ext_resource path="res://Assets/Chad Crouch - Game.mp3" type="AudioStream" id=16]
+[ext_resource path="res://Assets/kJQ_Ho.png" type="Texture" id=17]
+
+[sub_resource type="Shader" id=4]
+code = "shader_type canvas_item;
+
+uniform float x_intensity = 3.0;
+uniform float y_intensity = 0.5;
+uniform float offset = 0.0;
+uniform float speed : hint_range(0, 20) = 2.0;
+uniform float wave_frequency : hint_range(0, 100) = 20;
+uniform float wave_length : hint_range(50, 800) = 200.0;
+
+void fragment() {
+	vec2 real_uv = vec2(UV.x, UV.y);
+	
+	vec2 vecToBottom = vec2(1, 1) - UV.y; 
+	float distToBottom = length(vecToBottom);
+	
+	float final_speed = TIME * (speed / 4.0) + offset;
+	
+	float time_var = (cos(final_speed) * cos(final_speed * 4.0) * cos(final_speed * 2.0))/(200.0);
+	float time_var2 = (cos(final_speed) * cos(final_speed * 6.0) * cos(final_speed * 2.0))/(200.0);
+	
+	float wave_from_x = (cos(real_uv.x * 100.0)/1000.0);
+	float wave_large_from_x = cos(TIME + (real_uv.x * wave_frequency))/wave_length;
+	
+	float wave_from_y = (cos(real_uv.y * 99000.0)/90000.0);
+	
+	float new_x = real_uv.x + time_var * (distToBottom * x_intensity) + wave_from_x + (wave_large_from_x);
+	float new_y = real_uv.y + time_var2 * (distToBottom * y_intensity);
+	
+	vec2 new_uv1 = vec2(new_x, new_y);
+	vec4 new_texture = texture(TEXTURE, new_uv1);
+	
+	if(new_texture.rgb != vec3(1,1,1)){
+		COLOR.rgba = new_texture.rgba;
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
+shader_param/x_intensity = 3.0
+shader_param/y_intensity = 0.5
+shader_param/offset = 0.0
+shader_param/speed = 2.0
+shader_param/wave_frequency = 20.0
+shader_param/wave_length = 200.0
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 100, 500 )
@@ -21,13 +70,28 @@ extents = Vector2( 100, 500 )
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 612, 100 )
 
+[sub_resource type="Environment" id=3]
+background_mode = 4
+dof_blur_far_enabled = true
+dof_blur_far_distance = 1.3
+glow_enabled = true
+glow_bloom = 0.03
+glow_blend_mode = 0
+glow_bicubic_upscale = true
+
 [node name="Game" type="Node2D"]
 script = ExtResource( 4 )
+
+[node name="ColorRect" type="Sprite" parent="."]
+material = SubResource( 5 )
+position = Vector2( 508.5, 399.5 )
+scale = Vector2( 1.32422, 1.56055 )
+texture = ExtResource( 17 )
 
 [node name="Comet_Container" type="Node2D" parent="."]
 script = ExtResource( 10 )
 
-[node name="Wall_Container" type="Node2D" parent="."]
+[node name="Wall_Container" type="CanvasLayer" parent="."]
 
 [node name="Wall_Left" type="StaticBody2D" parent="Wall_Container"]
 script = ExtResource( 6 )
@@ -87,6 +151,9 @@ script = ExtResource( 9 )
 
 [node name="Timer" type="Timer" parent="Fever"]
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 3 )
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HUD" parent="UI" instance=ExtResource( 7 )]
@@ -100,6 +167,10 @@ visible = false
 pause_mode = 2
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = ExtResource( 16 )
+volume_db = -14.265
+autoplay = true
 
 [node name="Paddle_Audio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 12 )
@@ -112,5 +183,10 @@ stream = ExtResource( 13 )
 
 [node name="Ball_Audio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 11 )
+
+[node name="Camera" type="Camera2D" parent="."]
+anchor_mode = 0
+current = true
+script = ExtResource( 15 )
 
 [connection signal="timeout" from="Fever/Timer" to="Fever" method="_on_Timer_timeout"]

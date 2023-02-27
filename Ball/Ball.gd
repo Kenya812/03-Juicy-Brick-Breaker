@@ -35,8 +35,8 @@ func _on_Ball_body_entered(body):
 	if body.has_method("hit"):
 		body.hit(self)
 		accelerate = true
-		$Tween.interpolate_property($Images/Highlight, "modulate:a", 1.0, 1.0, time_highlight, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-		$Tween.interpolate_property($Images/Highlight, "scale", Vector2(0.1,0.1), Vector2(0.1,0.1), time_highlight_size, Tween.TRANS_BOUNCE, Tween.EASE_IN)
+		$Tween.interpolate_property($Images/Highlight, "modulate:a", 1.0, 0.0, time_highlight, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		$Tween.interpolate_property($Images/Highlight, "scale", Vector2(0.4,0.4), Vector2(0.2,0.2), time_highlight_size, Tween.TRANS_BOUNCE, Tween.EASE_IN)
 		$Tween.start()
 		wobble_direction = linear_velocity.tangent().normalized()
 		wobble_amplitude = wobble_max
